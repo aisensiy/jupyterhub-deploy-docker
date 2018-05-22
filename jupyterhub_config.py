@@ -47,11 +47,6 @@ c.DockerSpawner.debug = True
 c.JupyterHub.hub_ip = 'jupyterhub'
 c.JupyterHub.hub_port = 8080
 
-# TLS config
-c.JupyterHub.port = 443
-c.JupyterHub.ssl_key = os.environ['SSL_KEY']
-c.JupyterHub.ssl_cert = os.environ['SSL_CERT']
-
 # Authenticate users with GitHub OAuth
 c.JupyterHub.authenticator_class = 'oauthenticator.GitHubOAuthenticator'
 c.GitHubOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
@@ -61,12 +56,6 @@ data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
 
 c.JupyterHub.cookie_secret_file = os.path.join(data_dir,
     'jupyterhub_cookie_secret')
-
-c.JupyterHub.db_url = 'postgresql://postgres:{password}@{host}/{db}'.format(
-    host=os.environ['POSTGRES_HOST'],
-    password=os.environ['POSTGRES_PASSWORD'],
-    db=os.environ['POSTGRES_DB'],
-)
 
 # Whitlelist users and admins
 c.Authenticator.whitelist = whitelist = set()
