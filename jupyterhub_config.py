@@ -10,6 +10,8 @@ c = get_config()
 # avoid having to rebuild the JupyterHub container every time we change a
 # configuration parameter.
 
+c.JupyterHub.ip = '0.0.0.0'
+
 # Spawn single-user servers as Docker containers
 c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
 # Spawn containers from this image
@@ -33,6 +35,7 @@ c.DockerSpawner.extra_host_config = { 'network_mode': network_name }
 # We follow the same convention.
 notebook_dir = os.environ.get('DOCKER_NOTEBOOK_DIR') or '/home/jovyan/work'
 c.DockerSpawner.notebook_dir = notebook_dir
+# c.DockerSpawner.default_url = "/tree%s" % notebook_dir
 # Mount the real user's Docker volume on the host to the notebook user's
 # notebook directory in the container
 c.DockerSpawner.volumes = { 'jupyterhub-user-{username}': notebook_dir }
@@ -50,12 +53,6 @@ c.JupyterHub.hub_port = 8080
 # Authenticate users with GitHub OAuth
 c.JupyterHub.authenticator_class = 'oauthenticator.GitHubOAuthenticator'
 c.GitHubOAuthenticator.oauth_callback_url = os.environ['OAUTH_CALLBACK_URL']
-
-# Persist hub data on volume mounted inside container
-data_dir = os.environ.get('DATA_VOLUME_CONTAINER', '/data')
-
-c.JupyterHub.cookie_secret_file = os.path.join(data_dir,
-    'jupyterhub_cookie_secret')
 
 # Whitlelist users and admins
 c.Authenticator.whitelist = whitelist = set()

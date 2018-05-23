@@ -7,5 +7,3 @@ FROM jupyterhub/jupyterhub-onbuild:$JUPYTERHUB_VERSION
 RUN /opt/conda/bin/pip install --no-cache-dir \
         oauthenticator==0.7.* \
         dockerspawner==0.9.*
-
-COPY ./userlist /srv/jupyterhub/userlist
