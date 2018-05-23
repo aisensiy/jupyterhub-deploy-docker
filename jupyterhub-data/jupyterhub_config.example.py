@@ -27,8 +27,8 @@ class DockerFormSpawner(DockerSpawner):
     <input name='mem_guarantee' placeholder='100Mi, 1.5Gi' class='form-control'></input>
     <br/><br/>
 
-    <label for='extra_resource_limits'>Extra Resource Limits</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input name='extra_resource_limits' placeholder='{&quot;nvidia.com/gpu&quot;: 3}' class='form-control'></input>
+    <label for='extra_resource_limits'>GPUs</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input name='extra_resource_limits' placeholder='all' class='form-control' value='all'></input>
     <br/><br/>
     '''
 
@@ -41,6 +41,7 @@ class DockerFormSpawner(DockerSpawner):
             'mem_guarantee', [''])[0].strip()
         options['extra_resource_limits'] = formdata.get(
             'extra_resource_limits', [''])[0].strip()
+        self.environment['NVIDIA_VISIBLE_DEVICES'] = options['extra_resource_limits']
         return options
 
     @property
