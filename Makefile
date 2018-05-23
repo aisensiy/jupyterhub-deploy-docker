@@ -19,13 +19,13 @@ secrets/oauth.env:
 	@exit 1
 
 userlist:
-	@echo "Add usernames, one per line, to ./userlist, such as:"
+	@echo "Add usernames, one per line, to ./jupyterhub-data/userlist, such as:"
 	@echo "    zoe admin"
 	@echo "    wash"
 	@exit 1
 
 
-check-files: userlist secrets/oauth.env
+check-files: jupyterhub-data/userlist secrets/oauth.env
 
 pull:
 	docker pull $(DOCKER_NOTEBOOK_IMAGE)

@@ -19,7 +19,7 @@ services:
       # within the container
       - "/var/run/docker.sock:/var/run/docker.sock:rw"
       # Bind Docker volume on host for JupyterHub database and cookie secrets
-      - "data:${DATA_VOLUME_CONTAINER}"
+      - "$PWD/jupyterhub-data:/srv/jupyterhub"
     ports:
       - "8000:8000"
     environment:
@@ -35,11 +35,6 @@ services:
       - secrets/oauth.env
     command: >
       jupyterhub -f /srv/jupyterhub/jupyterhub_config.py
-
-volumes:
-  data:
-    external:
-      name: ${DATA_VOLUME_HOST}
 
 networks:
   default:

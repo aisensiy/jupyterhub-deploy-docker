@@ -1,3 +1,6 @@
 secrets/
-userlist
 .DS_Store
+jupyterhub-data/jupyterhub_cookie_secret
+jupyterhub-data/jupyterhub_config.py
+jupyterhub-data/*.sqlite
+jupyterhub-data/userlist
