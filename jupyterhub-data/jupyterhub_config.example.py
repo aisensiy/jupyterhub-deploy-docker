@@ -3,8 +3,77 @@
 
 # Configuration file for JupyterHub
 import os
+import json
+from dockerspawner import DockerSpawner
+
+class DockerFormSpawner(DockerSpawner):
+
+    # relies on HTML5 for image datalist
+    def _options_form_default(self):
+        return '''
+    <label for='image'>Image</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input list="image" name="image" placeholder='repo/image:tag' class="form-control">
+    <datalist id="image">
+      <option value="eisenxu/tensorflow-1.7.0-notebook-cpu:v20180419-0ad94c4e">
+      <option value="eisenxu/tensorflow-1.7.0-notebook-gpu:v20180419-0ad94c4e">
+    </datalist>
+    <br/><br/>
+
+    <label for='cpu_guarantee'>CPU</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input name='cpu_guarantee' placeholder='200m, 1.0, 2.5, etc' class='form-control'></input>
+    <br/><br/>
+
+    <label for='mem_guarantee'>Memory</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input name='mem_guarantee' placeholder='100Mi, 1.5Gi' class='form-control'></input>
+    <br/><br/>
+
+    <label for='extra_resource_limits'>Extra Resource Limits</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input name='extra_resource_limits' placeholder='{&quot;nvidia.com/gpu&quot;: 3}' class='form-control'></input>
+    <br/><br/>
+    '''
+
+    def options_from_form(self, formdata):
+        options = {}
+        options['image'] = formdata.get('image', [''])[0].strip()
+        options['cpu_guarantee'] = formdata.get(
+            'cpu_guarantee', [''])[0].strip()
+        options['mem_guarantee'] = formdata.get(
+            'mem_guarantee', [''])[0].strip()
+        options['extra_resource_limits'] = formdata.get(
+            'extra_resource_limits', [''])[0].strip()
+        return options
+
+    @property
+    def image(self):
+        image = 'eisenxu/tensorflow-notebook-cpu'
+        if self.user_options.get('image'):
+            image = self.user_options['image']
+        return image
+
+    @property
+    def cpu_guarantee(self):
+        cpu = '500m'
+        if self.user_options.get('cpu_guarantee'):
+            cpu = self.user_options['cpu_guarantee']
+        return cpu
+
+    @property
+    def mem_guarantee(self):
+        mem = '1Gi'
+        if self.user_options.get('mem_guarantee'):
+            mem = self.user_options['mem_guarantee']
+        return mem
+
+    @property
+    def extra_resource_limits(self):
+        extra = ''
+        if self.user_options.get('extra_resource_limits'):
+            extra = json.loads(self.user_options['extra_resource_limits'])
+        return extra
+
 
 c = get_config()
+
 
 # We rely on environment variables to configure JupyterHub so that we
 # avoid having to rebuild the JupyterHub container every time we change a
@@ -13,9 +82,9 @@ c = get_config()
 c.JupyterHub.ip = '0.0.0.0'
 
 # Spawn single-user servers as Docker containers
-c.JupyterHub.spawner_class = 'dockerspawner.DockerSpawner'
+c.JupyterHub.spawner_class = DockerFormSpawner
 # Spawn containers from this image
-c.DockerSpawner.container_image = os.environ['DOCKER_NOTEBOOK_IMAGE']
+# c.DockerSpawner.container_image = os.environ['DOCKER_NOTEBOOK_IMAGE']
 # JupyterHub requires a single-user instance of the Notebook server, so we
 # default to using the `start-singleuser.sh` script included in the
 # jupyter/docker-stacks *-notebook images as the Docker run command when
